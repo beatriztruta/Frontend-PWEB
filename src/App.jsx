@@ -12,11 +12,19 @@ import AdminPurchases from './pages/AdminPurchases';
 import AdminCarts from './pages/AdminCarts';
 import Navbar from './components/Navbar';
 import { AuthProvider } from './contexts/AuthContext';
+import AdminLayout from './layouts/AdminLayout';
 
 function LayoutWrapper({ children }) {
   const location = useLocation();
   const noNavbarRoutes = ['/', '/register'];
+  const adminRoutes = ['/admin/products', '/admin/users', '/admin/purchases', '/admin/carts'];
+
+  if (adminRoutes.includes(location.pathname)) {
+    return <AdminLayout>{children}</AdminLayout>;
+  }
+
   const hideNavbar = noNavbarRoutes.includes(location.pathname);
+
   return (
     <>
       {!hideNavbar && <Navbar />}
@@ -27,6 +35,7 @@ function LayoutWrapper({ children }) {
 
 export default function App() {
   const [user, setUser] = useState(null);
+
   return (
     <AuthProvider>
       <Router>
