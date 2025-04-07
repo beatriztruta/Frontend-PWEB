@@ -16,13 +16,11 @@ export default function Purchases() {
           return;
         }
 
-        // 1. Recupera o ID do usuário
         const userResponse = await axios.get(`${BACKEND_BASE_URL}/api/users/email/${userEmail}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const userId = userResponse.data.id;
 
-        // 2. Recupera as compras do usuário
         const comprasRes = await axios.get(`${BACKEND_BASE_URL}/api/purchases/user/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
