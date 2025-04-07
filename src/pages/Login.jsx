@@ -4,7 +4,7 @@ import axios from 'axios';
 import { AuthContext } from  '../contexts/AuthContext';
 
 export default function Login() {
-  const { setUser, setToken } = useContext(AuthContext);
+  const { setUserEmail, setToken } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
@@ -23,7 +23,7 @@ export default function Login() {
 
       const token = response.data.token;
 
-      setUser({ email });
+      setUserEmail(email);
       setToken(token);
       navigate('/home');
     } catch (err) {
