@@ -1,6 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Register() {
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState('');
+  const navigate = useNavigate();
+  const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setErro('');
+
+    try {
+      await axios.post(`${BACKEND_BASE_URL}/api/users`, {
+        name: nome,
+        email: email,
+        password: senha,
+        admin: false
+      });
+
+      navigate('/'); 
+    } catch (err) {
+      console.error(err);
+      setErro('Erro ao registrar. Verifique os dados e tente novamente.');
+    }
+  };
+
   return (
     <div style={{
       backgroundColor: '#b3ecff',
@@ -18,10 +46,31 @@ export default function Register() {
         textAlign: 'center'
       }}>
         <h2 style={{ marginBottom: '1.5rem' }}>Registrar-se</h2>
-        <input type="text" placeholder="Nome" style={inputStyle} />
-        <input type="email" placeholder="E-mail" style={inputStyle} />
-        <input type="password" placeholder="Senha" style={inputStyle} />
-        <button style={buttonStyle}>Registrar</button>
+        <form onSubmit={handleRegister}>
+          <input
+            type="text"
+            placeholder="Nome"
+            value={nome}
+            onChange={e => setNome(e.target.value)}
+            style={inputStyle}
+          />
+          <input
+            type="email"
+            placeholder="E-mail"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            style={inputStyle}
+          />
+          <input
+            type="password"
+            placeholder="Senha"
+            value={senha}
+            onChange={e => setSenha(e.target.value)}
+            style={inputStyle}
+          />
+          {erro && <p style={{ color: 'red', fontSize: '0.85rem' }}>{erro}</p>}
+          <button type="submit" style={buttonStyle}>Registrar</button>
+        </form>
         <p style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
           <a href="/" style={{ color: '#333', textDecoration: 'underline' }}>
             Já possui uma conta?
