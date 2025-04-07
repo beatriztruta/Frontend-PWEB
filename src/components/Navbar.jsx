@@ -11,7 +11,7 @@ export default function Navbar() {
       justifyContent: 'space-between',
       alignItems: 'center'
     }}>
-      <h2 style={{ margin: 0 }}>⚙️ QAPI</h2>
+      <h2 style={{ margin: 0 }}>⚙️ API</h2>
       <div style={{ display: 'flex', gap: '1rem' }}>
         <Link to="/home" style={linkStyle}>Produtos</Link>
         <Link to="/cart" style={linkStyle}>Carrinho</Link>

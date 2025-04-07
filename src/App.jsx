@@ -11,8 +11,7 @@ import AdminUsers from './pages/AdminUsers';
 import AdminPurchases from './pages/AdminPurchases';
 import AdminCarts from './pages/AdminCarts';
 import Navbar from './components/Navbar';
-
-export const AuthContext = createContext(null);
+import { AuthProvider } from './contexts/AuthContext';
 
 function LayoutWrapper({ children }) {
   const location = useLocation();
@@ -29,7 +28,7 @@ function LayoutWrapper({ children }) {
 export default function App() {
   const [user, setUser] = useState(null);
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthProvider>
       <Router>
         <LayoutWrapper>
           <Routes>
@@ -46,6 +45,6 @@ export default function App() {
           </Routes>
         </LayoutWrapper>
       </Router>
-    </AuthContext.Provider>
+    </AuthProvider>
   );
 }
