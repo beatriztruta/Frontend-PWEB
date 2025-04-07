@@ -121,7 +121,7 @@ export default function Cart() {
         }}>
           <p><strong>Item:</strong> {prod.nome}</p>
           <p><strong>Quantidade:</strong> {prod.quantidade}</p>
-          <p><strong>Total:</strong> R$ {prod.total.toFixed(2).replace('.', ',')}</p>
+          <p><strong>Preço:</strong> R$ {prod.total.toFixed(2).replace('.', ',')}</p>
           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
             <button
               onClick={() => atualizarQuantidade(prod.productId, -1)}
