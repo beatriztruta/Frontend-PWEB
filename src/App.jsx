@@ -1,5 +1,8 @@
-import React, { useState, createContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { AuthProvider, AuthContext } from './contexts/AuthContext';
+import { useContext } from 'react';
+
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
@@ -11,20 +14,25 @@ import AdminUsers from './pages/AdminUsers';
 import AdminPurchases from './pages/AdminPurchases';
 import AdminCarts from './pages/AdminCarts';
 import Navbar from './components/Navbar';
-import { AuthProvider } from './contexts/AuthContext';
 import AdminLayout from './layouts/AdminLayout';
 
 function LayoutWrapper({ children }) {
   const location = useLocation();
-  const noNavbarRoutes = ['/', '/register'];
-  const adminRoutes = ['/admin/products', '/admin/users', '/admin/purchases', '/admin/carts'];
+  const { userData } = useContext(AuthContext);
 
-  if (adminRoutes.includes(location.pathname)) {
-    return <AdminLayout>{children}</AdminLayout>;
+  const noNavbarRoutes = ['/', '/register'];
+
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  if (isAdminRoute) {
+    return userData?.admin ? (
+      <AdminLayout>{children}</AdminLayout>
+    ) : (
+      <Navigate to="/home" />
+    );
   }
 
   const hideNavbar = noNavbarRoutes.includes(location.pathname);
-
   return (
     <>
       {!hideNavbar && <Navbar />}
@@ -34,8 +42,6 @@ function LayoutWrapper({ children }) {
 }
 
 export default function App() {
-  const [user, setUser] = useState(null);
-
   return (
     <AuthProvider>
       <Router>

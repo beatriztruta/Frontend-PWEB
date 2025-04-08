@@ -1,31 +1,43 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { AuthContext } from  '../contexts/AuthContext';
+import { AuthContext } from '../contexts/AuthContext';
 
 export default function Login() {
-  const { setUserEmail, setToken } = useContext(AuthContext);
+  const { setUserEmail, setToken, setUserData } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const navigate = useNavigate();
-  const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL
+  const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setErro('');
 
     try {
-      const response = await axios.post(`${BACKEND_BASE_URL}/api/auth/login`, {
+      const loginResponse = await axios.post(`${BACKEND_BASE_URL}/api/auth/login`, {
         email: email,
         password: senha,
       });
 
-      const token = response.data.token;
+      const token = loginResponse.data.token;
 
       setUserEmail(email);
       setToken(token);
-      navigate('/home');
+
+      const userResponse = await axios.get(`${BACKEND_BASE_URL}/api/users/email/${email}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUserData(userResponse.data);
+
+      if (userResponse.data.admin) {
+        navigate('/admin/products');
+      } else {
+        navigate('/home');
+      }
     } catch (err) {
       console.error(err);
       setErro('E-mail ou senha inválidos.');
