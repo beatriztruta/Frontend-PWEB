@@ -26,12 +26,13 @@ export default function AdminUsers() {
 
   return (
     <div style={{ padding: '2rem', backgroundColor: '#e0f2f1', minHeight: '100vh' }}>
-      <h2>Usuários Cadastrados</h2>
+      <h2 style={{ color: '#000'}}>Usuários Cadastrados</h2>
       {erro && <p style={{ color: 'red' }}>{erro}</p>}
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {users.map(user => (
           <li key={user.id} style={{
             backgroundColor: '#fff',
+            color: '#000',
             marginBottom: '1rem',
             padding: '1rem',
             borderRadius: '8px',

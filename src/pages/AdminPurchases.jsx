@@ -16,14 +16,7 @@ export default function Purchases() {
           return;
         }
 
-        // 1. Recupera o ID do usuário
-        const userResponse = await axios.get(`${BACKEND_BASE_URL}/api/users/email/${userEmail}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const userId = userResponse.data.id;
-
-        // 2. Recupera as compras do usuário
-        const comprasRes = await axios.get(`${BACKEND_BASE_URL}/api/purchases/user/${userId}`, {
+        const comprasRes = await axios.get(`${BACKEND_BASE_URL}/api/purchases`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -55,12 +48,13 @@ export default function Purchases() {
 
   return (
     <div style={{ padding: '2rem', backgroundColor: '#b3ecff', minHeight: '100vh' }}>
-      <h2>Minhas Compras</h2>
+      <h2 style={{ color: '#000'}}>Minhas Compras</h2>
       {erro && <p style={{ color: 'red' }}>{erro}</p>}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
         {compras.map(c => (
           <div key={c.id} style={{
             backgroundColor: '#fff',
+            color: '#000',
             padding: '1rem',
             borderRadius: '10px',
             boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
