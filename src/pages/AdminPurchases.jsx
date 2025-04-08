@@ -48,7 +48,7 @@ export default function Purchases() {
 
   return (
     <div style={{ padding: '2rem', backgroundColor: '#b3ecff', minHeight: '100vh' }}>
-      <h2 style={{ color: '#000'}}>Minhas Compras</h2>
+      <h2 style={{ color: '#000'}}>Compras dos usuários</h2>
       {erro && <p style={{ color: 'red' }}>{erro}</p>}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
         {compras.map(c => (
