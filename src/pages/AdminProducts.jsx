@@ -1,46 +1,74 @@
-import React from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import axios from 'axios';
+import { AuthContext } from '../contexts/AuthContext';
 
 export default function AdminProducts() {
-  const produtos = [
-    { id: 1, nome: "Camiseta Básica", preco: "R$ 39,99" },
-    { id: 2, nome: "Camiseta Premium", preco: "R$ 59,90" },
-  ];
+  const { token } = useContext(AuthContext);
+  const [produtos, setProdutos] = useState([]);
+  const [erro, setErro] = useState('');
+  const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
+
+  const fetchProdutos = async () => {
+    try {
+      const res = await axios.get(`${BACKEND_BASE_URL}/api/products`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setProdutos(res.data);
+    } catch (err) {
+      console.error(err);
+      setErro('Erro ao carregar os produtos.');
+    }
+  };
+
+  const removerProduto = async (id) => {
+    try {
+      await axios.delete(`${BACKEND_BASE_URL}/api/products/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchProdutos();
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao remover produto.');
+    }
+  };
+
+  useEffect(() => {
+    fetchProdutos();
+  }, []);
 
   return (
-    <div style={{ padding: '2rem', backgroundColor: '#b3ecff', minHeight: '100vh' }}>
-      <h2>Admin - Produtos</h2>
-      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-        {produtos.map(p => (
-          <div key={p.id} style={{
+    <div style={{ padding: '2rem', backgroundColor: '#f3e5f5', minHeight: '100vh' }}>
+      <h2>Gerenciar Produtos</h2>
+      {erro && <p style={{ color: 'red' }}>{erro}</p>}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+        {produtos.map(produto => (
+          <div key={produto.id} style={{
             backgroundColor: '#fff',
             padding: '1rem',
             borderRadius: '10px',
-            width: '200px',
+            width: '250px',
             boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
           }}>
-            <h4>{p.nome}</h4>
-            <p>{p.preco}</p>
-            <button style={btnStyle}>Editar</button>
-            <button style={deleteStyle}>Excluir</button>
+            <h4>{produto.nome}</h4>
+            <p>{`R$ ${produto.preco.toFixed(2).replace('.', ',')}`}</p>
+            <button
+              onClick={() => removerProduto(produto.id)}
+              style={{
+                backgroundColor: '#f44336',
+                color: '#fff',
+                border: 'none',
+                padding: '0.5rem',
+                width: '100%',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              Remover
+            </button>
           </div>
         ))}
       </div>
     </div>
   );
 }
-
-const btnStyle = {
-  backgroundColor: '#ffeb3b',
-  border: 'none',
-  padding: '0.4rem',
-  width: '100%',
-  marginTop: '0.5rem',
-  borderRadius: '5px',
-  cursor: 'pointer'
-};
-
-const deleteStyle = {
-  ...btnStyle,
-  backgroundColor: '#f44336',
-  color: '#fff'
-};
