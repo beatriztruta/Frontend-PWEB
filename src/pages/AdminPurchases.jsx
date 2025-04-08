@@ -1,39 +1,80 @@
-import React from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import axios from 'axios';
+import { AuthContext } from '../contexts/AuthContext';
 
-export default function AdminPurchases() {
-  const compras = [
-    { id: 1, nome: "Fulano", total: "R$ 120,00", data: "17/03/2025" },
-    { id: 2, nome: "Ciclano", total: "R$ 79,98", data: "16/03/2025" },
-  ];
+export default function Purchases() {
+  const { userEmail, token } = useContext(AuthContext);
+  const [compras, setCompras] = useState([]);
+  const [erro, setErro] = useState('');
+  const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
+
+  useEffect(() => {
+    const fetchCompras = async () => {
+      try {
+        if (!token) {
+          setErro('Usuário não autenticado.');
+          return;
+        }
+
+        const comprasRes = await axios.get(`${BACKEND_BASE_URL}/api/purchases`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const comprasFormatadas = comprasRes.data.map((compra) => ({
+          id: compra.id,
+          total: compra.precoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+          data: new Date(compra.data).toLocaleDateString('pt-BR'),
+          formaPagamento: compra.formaPagamento,
+          itens: compra.cart.cartProducts.map(cp => ({
+            nome: cp.product.nome,
+            precoUnitario: cp.product.preco,
+            quantidade: cp.quantidade,
+            subtotal: (cp.product.preco * cp.quantidade).toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL'
+            })
+          }))
+        }));
+
+        setCompras(comprasFormatadas);
+      } catch (err) {
+        console.error(err);
+        setErro('Erro ao carregar as compras.');
+      }
+    };
+
+    fetchCompras();
+  }, [userEmail]);
 
   return (
     <div style={{ padding: '2rem', backgroundColor: '#b3ecff', minHeight: '100vh' }}>
-      <h2>Admin - Compras</h2>
-      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+      <h2 style={{ color: '#000'}}>Minhas Compras</h2>
+      {erro && <p style={{ color: 'red' }}>{erro}</p>}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
         {compras.map(c => (
           <div key={c.id} style={{
             backgroundColor: '#fff',
+            color: '#000',
             padding: '1rem',
             borderRadius: '10px',
-            width: '220px',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            width: '300px'
           }}>
-            <p><strong>Cliente:</strong> {c.nome}</p>
             <p><strong>Total:</strong> {c.total}</p>
             <p><strong>Data:</strong> {c.data}</p>
-            <button style={btnStyle}>Detalhes</button>
+            <p><strong>Forma de Pagamento:</strong> {c.formaPagamento}</p>
+            <hr />
+            <p><strong>Itens:</strong></p>
+            <ul>
+              {c.itens.map((item, idx) => (
+                <li key={idx}>
+                  {item.nome} - {item.quantidade}x R$ {item.precoUnitario.toFixed(2).replace('.', ',')} = {item.subtotal}
+                </li>
+              ))}
+            </ul>
           </div>
         ))}
       </div>
     </div>
   );
 }
-
-const btnStyle = {
-  backgroundColor: '#ffeb3b',
-  border: 'none',
-  padding: '0.4rem',
-  width: '100%',
-  borderRadius: '5px',
-  cursor: 'pointer'
-};
